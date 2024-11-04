@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!--  -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Aplicación Spring Boot</title>
+
+    <link rel="stylesheet" href="/Principal/css/styles.css">
+
+
+
+
+</head>
+
+<body>
+    <header>
+        <h1>APLICACION DE PRUEBA</h1>
+        
+    </header>
+    <main>
+        <h2>Tipo de Árbol Actual: <span th:text="${tipoArbol}"></span></h2>
+        <h2>¡Hola, henry!</h2>
+
+            <section class="form-section">
+                <form action="/Principal/api/arbol/seleccionar" method="post">
+                    <label for="tipoArbol">Selecciona el tipo de árbol:</label>
+                    <select name="tipoArbol" id="tipoArbol">
+                        <option value="binario">Árbol Binario</option>
+                        <option value="avl">Árbol AVL</option>
+                        <option value="arbol-mv">Árbol M-Vias</option>
+                    </select>
+                    <button type="submit" class="btn">Seleccionar</button>
+                </form>
+            </section>
+
+        
+        
+        <p>Esta es una aplicación web de prueba</p>
+       
+    </main>
+    <!-- <footer>
+        <p>&copy; 2024 Presentación</p>
+    </footer> -->
+</body>
+
+</html>

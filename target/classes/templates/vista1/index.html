@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Árboles</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/Principal/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1>Árbol Binario</h1>
+    </header>
+
+    <form>
+        <h2>Presione Listar</h2>
+        <a href="/Principal/api/arbol/" class="btn"><i class="fas fa-home"></i> Ir a Inicio</a>
+        <button type="button" id="listar" class="btn"><i class="fas fa-list"></i>Listar</button>
+        <p>El listar lista por defecto los productos.</p>
+    </form>
+    <main>
+        <article>
+            <form id="searchForm">
+                <label for="enter">Introducir Nombre</label>
+                <input type="text" name="enter" id="enter" placeholder="Escribe un nombre...">
+                <button type="submit" class="btn"><i class="fas fa-search"></i>Buscar</button>
+
+                <p>El resultado de la búsqueda es: <span id="respuesta"></span></p>
+            </form>
+       
+        </article>
+        
+        <article id="lista1" style="display: none;">
+            <form>
+                
+                <h2 id="tituloListado">Listado de Nombres</h2>
+                <ul id="listaNombres"></ul>
+            </form>
+        </article>
+    </main>
+    <script>
+        $(document).ready(function () {
+            $('#searchForm').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    url: '/Principal/api/arbol/buscar',
+                    data: $(this).serialize(),
+                    success: function (respuesta) {
+                        $('#respuesta').text(respuesta);
+                    },
+                    error: function () {
+                        $('#respuesta').text('Error en la búsqueda');
+                    }
+                });
+            });
+
+            $('#listar').on('click', function (e) {
+                e.preventDefault();
+                $('#lista1').slideToggle();
+                $('html, body').animate({
+                    scrollTop: $('#tituloListado').offset().top // Desplazarse hacia el título
+                }, 800);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/Principal/api/arbol/listado',
+                    success: function () {
+                        $.ajax({
+                            type: 'GET',
+                            url: '/Principal/api/arbol/listar',
+                            success: function (nombresList) {
+                                $('#listaNombres').empty();
+                                nombresList.forEach(function (nombre) {
+                                    $('#listaNombres').append('<li>' + nombre + '</li>');
+                                });
+                            },
+                            error: function () {
+                                alert('Error al cargar la lista');
+                            }
+                        });
+                    },
+                    error: function () {
+                        alert('Error al insertar los elementos');
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>
