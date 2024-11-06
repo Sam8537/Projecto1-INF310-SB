@@ -1,6 +1,6 @@
 package testArbol4;
 
-import com.uagrm.ficct.ejemplo2.ArbolMV;
+import com.uagrm.ficct.ejemplo2.ArbolB;
 import com.uagrm.ficct.ejemplo2.excepciones.OrdenInvalidoException;
 
 
@@ -13,7 +13,8 @@ public class testArbol1 {
 		iArbol<Integer, String> arbol;
 
 		//arbol = new ArbolBinario<>();
-		arbol = new ArbolMV<>(4);
+		//arbol = new ArbolMV<>(4);
+		arbol = new ArbolB<>(4);
 		// arbol= new ArbolAVL<>();
 		// arbol = new ArbolMViasBusqueda<>(4);
 

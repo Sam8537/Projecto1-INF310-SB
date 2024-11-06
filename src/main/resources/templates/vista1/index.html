@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -88,6 +88,263 @@
                     }
                 });
             });
+        });
+    </script>
+
+</body>
+
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Árboles</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/Principal/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1>Árbol Binario</h1>
+    </header>
+
+    <!-- Formulario de acción (Insertar / Eliminar) -->
+    <form>
+        <h2>Acciones</h2>
+        <a href="/Principal/api/arbol/" class="btn"><i class="fas fa-home"></i> Ir a Inicio</a>
+        <button type="button" id="listar" class="btn"><i class="fas fa-list"></i> Listar</button>
+        <button type="button" id="mostrarList" class="btn"><i class="fas fa-list"></i>Mostrar Lista</button>
+        <p>El listar lista por defecto los productos.</p>
+
+        <!-- Botones para Insertar y Eliminar -->
+        <div>
+            <button type="button" id="insertarBtn" class="btn"><i class="fas fa-plus"></i> Insertar Producto</button>
+            <button type="button" id="eliminarBtn" class="btn"><i class="fas fa-trash"></i> Eliminar Producto</button>
+        </div>
+    </form>
+
+    <main>
+        <article>
+            <!-- Formulario de búsqueda -->
+            <form id="searchForm">
+                <label for="enter">Introducir Nombre</label>
+                <input type="text" name="enter" id="enter" placeholder="Escribe un nombre...">
+                <button type="submit" class="btn"><i class="fas fa-search"></i>Buscar</button>
+                <p>El resultado de la búsqueda es: <span id="respuesta"></span></p>
+            </form>
+        </article>
+
+        <article id="lista1" style="display: none;">
+            <form>
+                <h2 id="tituloListado">Listado de Nombres</h2>
+                <ul id="listaNombres"></ul>
+            </form>
+        </article>
+
+        <!-- Formulario para Insertar Producto -->
+        <article id="formInsertar" style="display: none;">
+            <h3>Insertar Producto</h3>
+            <div id="mensajeRespuesta"></div>
+            <form id="insertForm">
+                <label for="producto">Nombre del Producto:</label>
+                <input type="text" id="producto" name="producto" placeholder="Nombre del producto" required>
+
+                <label for="descripcion">Descripción:</label>
+                <input type="text" id="descripcion" name="descripcion" placeholder="Descripción del producto" required>
+
+                <button type="submit" class="btn">Insertar Producto</button>
+            </form>
+        </article>
+
+        <!-- Formulario para Eliminar Producto -->
+        <article id="formEliminar" style="display: none;">
+            <h3>Eliminar Producto</h3>
+            <div id="mensajeResp"></div>
+            <form id="eliminarForm">
+                <label for="productoEliminar">Nombre del Producto a Eliminar:</label>
+                <input type="text" id="productoEliminar" name="productoEliminar" placeholder="Nombre del producto"
+                    required>
+                <button type="submit" class="btn">Eliminar Producto</button>
+            </form>
+        </article>
+    </main>
+
+    <script>
+        $(document).ready(function () {
+            // Acción de búsqueda
+            $('#searchForm').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    url: '/Principal/api/arbol/buscar',
+                    data: $(this).serialize(),
+                    success: function (respuesta) {
+                        $('#respuesta').text(respuesta).fadeIn();
+                      /*  setTimeout(function () {
+                            $('#respuesta').fadeOut()
+                        }, 3000);*/
+                        limpiarFormularioBuscar();
+                    },
+                    error: function () {
+                        $('#respuesta').text('Error en la búsqueda').fadeIn();
+                        setTimeout(function () {
+                            $('#respuesta').fadeOut()
+                        }, 3000);
+                        limpiarFormularioBuscar();
+                    }
+                });
+            });
+
+            // Acción de listar
+            $('#listar').on('click', function (e) {
+                e.preventDefault();
+                $('#lista1').slideToggle();
+                $('html, body').animate({
+                    scrollTop: $('#tituloListado').offset().top
+                }, 800);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/Principal/api/arbol/listado',
+                    success: function () {
+                        $.ajax({
+                            type: 'GET',
+                            url: '/Principal/api/arbol/listar',
+                            success: function (nombresList) {
+                                $('#listaNombres').empty();
+                                nombresList.forEach(function (nombre) {
+                                    $('#listaNombres').append('<li>' + nombre + '</li>');
+                                });
+                            },
+                            error: function () {
+                                alert('Error al cargar la lista');
+                            }
+                        });
+                    },
+                    error: function () {
+                        alert('Error al insertar los elementos');
+                    }
+                });
+            });
+
+            //mostrar lista actualizada
+            // Acción de listar
+            $('#mostrarList').on('click', function (e) {
+                e.preventDefault();
+                $('#lista1').slideToggle();
+                $('html, body').animate({
+                    scrollTop: $('#tituloListado').offset().top
+                }, 800);
+               
+                        $.ajax({
+                    type: 'GET',
+                    url: '/Principal/api/arbol/listar',
+                    success: function (nombresList) {
+                        $('#listaNombres').empty();
+                        nombresList.forEach(function (nombre) {
+                            $('#listaNombres').append('<li>' + nombre + '</li>');
+                        });
+                    },
+                    error: function () {
+                        alert('Error al cargar la lista');
+                    }
+                });
+               
+            });
+
+            // Mostrar formulario para insertar
+            $('#insertarBtn').on('click', function () {
+                $('#formInsertar').slideToggle();
+                $('html, body').animate({
+                    scrollTop: $('#insertForm').offset().top
+                }, 800);
+                $('#formEliminar').hide();
+            });
+
+            // Mostrar formulario para eliminar
+            $('#eliminarBtn').on('click', function () {
+                $('#formEliminar').slideToggle();
+                $('html, body').animate({
+                    scrollTop: $('#eliminarForm').offset().top
+                }, 800);
+                $('#formInsertar').hide();
+            });
+
+            // Procesar formulario de insertar
+            $('#insertForm').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    url: '/Principal/api/arbol/insertar', // Ajusta la URL según tu backend
+                    data: $(this).serialize(),
+
+                    success: function (respuesta) {
+                        $('#mensajeRespuesta').text('Producto insertado con éxito: ' + respuesta).css('color', 'green').fadeIn();
+                        setTimeout(function () {
+                            $('#mensajeRespuesta').fadeOut()
+                        }, 3000);
+                        limpiarFormularioInsertar();
+                    },
+                    error: function () {
+                        $('#mensajeRespuesta').text('Error al insertar el producto').css('color', 'red').fadeIn();
+                        setTimeout(function () {
+                            $('#mensajeRespuesta').fadeOut()
+                        }, 3000);
+                        limpiarFormularioInsertar();
+                    }
+                });
+            });
+
+            // Procesar formulario de eliminar
+            $('#eliminarForm').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    url: '/Principal/api/arbol/eliminar', // Ajusta la URL según tu backend
+                    data: $(this).serialize(),
+                    success: function (respuesta) {
+
+                        $('#mensajeResp').text('Producto eliminado con éxito: ' + respuesta).css('color', 'green').fadeIn();
+                        setTimeout(function () {
+                            $('#mensajeResp').fadeOut()
+                        }, 3000);
+                        limpiarFormularioEliminar();
+                    },
+                    error: function () {
+                        alert('');
+                        $('#mensajeResp').text('Error al eliminar el producto').css('color', 'red').fadeIn();
+                        setTimeout(function () {
+                            $('#mensajeResp').fadeOut()
+                        }, 3000);
+                        limpiarFormularioEliminar();
+                    }
+                });
+            });
+
+
+
+
+            // Función para limpiar el formulario de búsqueda
+            function limpiarFormularioBuscar() {
+                $('#enter').val(''); // Limpiar el input de búsqueda
+            }
+
+            // Función para limpiar el formulario de insertar
+            function limpiarFormularioInsertar() {
+                $('#producto').val(''); // Limpiar el input de nombre del producto
+                $('#descripcion').val(''); // Limpiar el input de descripción
+            }
+
+            // Función para limpiar el formulario de eliminar
+            function limpiarFormularioEliminar() {
+                $('#productoEliminar').val(''); // Limpiar el input de nombre del producto a eliminar
+            }
+
         });
     </script>
 

@@ -50,6 +50,10 @@ public class ArbolMV<K extends Comparable<K>, V> implements iArbol<K, V> {
 			if (claveAInsertar.compareTo(nodoActual.getClave(i - 1)) < 0) {
 				nodoActual.setClave(i, nodoActual.getClave(i - 1));
 				nodoActual.setValor(i, nodoActual.getValor(i - 1));
+				// se puede borrar las lineas de los hijos
+
+				nodoActual.setHijo(i + 1, nodoActual.getHijo(i));
+
 				if ((i - 1) == 0) {
 					nodoActual.setClave(0, claveAInsertar);
 					nodoActual.setValor(0, valorAsociado);
@@ -60,6 +64,10 @@ public class ArbolMV<K extends Comparable<K>, V> implements iArbol<K, V> {
 				nodoActual.setValor(i, valorAsociado);
 				break;
 			}
+		}
+		if (nodoActual.nroDeClavesNoVacias() == 0) {
+			nodoActual.setClave(0, claveAInsertar);
+			nodoActual.setValor(0, valorAsociado);
 		}
 	}
 
@@ -143,19 +151,23 @@ public class ArbolMV<K extends Comparable<K>, V> implements iArbol<K, V> {
 		return false;
 	}
 
-	private void eliminarClaveDeNodoDePosicion(NodoMV<K, V> nodoActual, int posicion) {
+	protected void eliminarClaveDeNodoDePosicion(NodoMV<K, V> nodoActual, int posicion) {
 
 		for (int i = posicion; i < nodoActual.nroDeClavesNoVacias(); i++) {
-			if (i == nodoActual.nroDeClavesNoVacias() - 1) {
-				K claveVacia = (K) NodoMV.datoVacio();
-				V valorVacio = (V) NodoMV.datoVacio();
-				nodoActual.setClave(i, claveVacia);
-				nodoActual.setValor(i, valorVacio);
-			} else {
-				nodoActual.setClave(i, nodoActual.getClave(i + 1));
-				nodoActual.setValor(i, nodoActual.getValor(i + 1));
-			}
-		}
+            if(i == nodoActual.nroDeClavesNoVacias() - 1){
+                K claveVacia = (K)NodoMV.datoVacio();
+                V valorVacio = (V)NodoMV.datoVacio();
+
+                nodoActual.setClave(i, claveVacia);
+                nodoActual.setValor(i, valorVacio);
+                nodoActual.setHijo(i, nodoActual.getHijo(i+1));
+                nodoActual.setHijo(i+1, NodoMV.nodoVacio());
+            }else{
+                nodoActual.setClave(i, nodoActual.getClave(i + 1));
+                nodoActual.setValor(i, nodoActual.getValor(i + 1));
+                nodoActual.setHijo(i, nodoActual.getHijo(i+1));
+            }
+        }
 	}
 
 	private K obtenerSucesorInOrden(NodoMV<K, V> nodoActual, int posicion) {

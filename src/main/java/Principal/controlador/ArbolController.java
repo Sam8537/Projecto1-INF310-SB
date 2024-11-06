@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.uagrm.ficct.ejemplo2.ArbolAVL;
+import com.uagrm.ficct.ejemplo2.ArbolB;
 import com.uagrm.ficct.ejemplo2.ArbolBinario;
 import com.uagrm.ficct.ejemplo2.ArbolMV;
 import com.uagrm.ficct.ejemplo2.excepciones.OrdenInvalidoException;
@@ -31,31 +32,37 @@ public class ArbolController {
         // this.arbol = new ArbolBinario<>(); // Inicializa tu árbol
      }
 
+
     @PostMapping("/seleccionar")
     public String seleccionarArbol(@RequestParam String tipoArbol, Model model) throws OrdenInvalidoException {
         // Cambia la implementación según la elección del usuario
+        String vista;
 
-        //String vista= "";
-        if ("avl".equals(tipoArbol)) {
-            this.arbol = new ArbolAVL<>(); // Usa la implementación AVL
-            return "vista2/index";
-          //  return "redirect:/Principal/api/arbol/vista2";
+        switch (tipoArbol) {
+            case "avl":
+                this.arbol = new ArbolAVL<>(); // Usa la implementación AVL
+                vista = "vista2/index";
+                break;
+
+            case "binario":
+                this.arbol = new ArbolBinario<>(); // Usa la implementación de árbol binario
+                vista = "vista1/index";
+                break;
+
+            case "arbolB":
+                this.arbol = new ArbolB<>(4); // Usa la implementación de árbol B
+                vista = "vista4/index";
+                break;
+            default:
+                this.arbol = new ArbolMV<>(4); // Por defecto usa la implementación ArbolMVias
+                vista = "vista3/index";
+                break;
         }
 
-        if("binario".equals(tipoArbol)){ 
-			this.arbol = new ArbolBinario<>();
-			return "vista1/index";
-		} else{// Usa la implementación Binario
-        	this.arbol = new ArbolMV<>(4);
-            return "vista3/index";
-            //return "redirect:/Principal/api/arbol/vista1";
-        }
-
-
-
-        // Redirige a la página principal o a donde necesites
-       // return "redirect: /Principal/api/arbol/"+vista; // Redirige a la vista principal
+        return vista;
     }
+
+
 
     @GetMapping("/vista1")
     public String vista1(Model model) {
@@ -81,7 +88,7 @@ public class ArbolController {
     	return "vista1/index";
     }
 
-  
+
 
     @PostMapping("/buscar")
     @ResponseBody // Indica que el resultado es el cuerpo de la respuesta
@@ -95,7 +102,7 @@ public class ArbolController {
     }
     }
 
-   
+
     @GetMapping("/listar")
     public ResponseEntity<List<String>> listarNombres() {
     List<String> nombresList = arbol.recorridoEnInOrden(); // Obtener nombres del árbol
@@ -120,9 +127,28 @@ public class ArbolController {
          arbol.insertar("Carne", "Precio : 32 bs -> Descripcion : Carnes/ embutidos");
          arbol.insertar("Higado", "Precio : 24 bs -> Descripcion : Carnes/ embutidos");
          arbol.insertar("Corazon", "Precio : 30 bs -> Descripcion : Carnes/ embutidos");
-         
-         
+
+
          return ResponseEntity.ok().build(); // Retorna una respuesta vacía 200 OK
+     }
+
+     @PostMapping("/insertar")
+     public ResponseEntity<Void> insertarProducto(@RequestParam String producto,@RequestParam String descripcion) {
+        arbol.insertar(producto,descripcion);
+        return ResponseEntity.ok().build();
+     }
+
+     //@ResponseBody // Indica que el resultado es el cuerpo de la respuesta
+     @PostMapping("/eliminar")
+     @ResponseBody
+     public String eliminarProducto(@RequestParam String productoEliminar) {
+     String resultado = arbol.eliminar(productoEliminar); // Método para buscar en el árbol
+
+     if (resultado != null) {
+         return resultado; // Devuelve solo el resultado
+     } else {
+         return "No existe el producto."; // Devuelve un mensaje de error
+     }
      }
 
 
